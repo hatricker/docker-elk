@@ -23,29 +23,17 @@ services:
     networks:
       - elk
 
-  logstash:
+  etherbeat:
     build:
-      context: logstash/
-      args:
-        ELK_VERSION: $ELK_VERSION
-    volumes:
-      - type: bind
-        source: ./logstash/config/logstash.yml
-        target: /usr/share/logstash/config/logstash.yml
-        read_only: true
-      - type: bind
-        source: ./logstash/pipeline
-        target: /usr/share/logstash/pipeline
-        read_only: true
-    ports:
-      - "5000:5000"
-      - "9600:9600"
+      context: beats/etherbeat/
     environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_HOST: "elasticsearch:9200"
+      ETH_RPC_ADDR: $ETH_RPC_ADDR
     networks:
       - elk
     depends_on:
       - elasticsearch
+      - kibana
 
   kibana:
     build:
